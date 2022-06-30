@@ -71,7 +71,6 @@ df.drop('tip_percentage', axis=1, inplace=True)
 # print(df.columns)
 # print(df.shape)
 
-
 #######################
 # Dataframe - Rows
 df = df.set_index('Payment ID')
@@ -93,3 +92,126 @@ df = df.drop('Sun2959')
 # insert new row
 one_row = df.iloc[0]
 df = df.append(one_row)
+
+#######################
+# conditional formatting
+df_tips = pd.read_csv("./additional_data/tips.csv")
+bool_series = df_tips['total_bill'] > 40
+
+df_tips_40 = df_tips[df_tips['total_bill'] > 40]
+df_male = df_tips[df_tips['sex'] == 'Male']
+# print(df_male)
+
+first = df_tips['total_bill'] > 30
+second = df_tips['sex'] == 'Male'
+df_two_cond = df_tips[(df_tips['total_bill'] > 30) & (df_tips['sex'] == 'Male')]
+# print(df_tips[first & second])
+
+# filtering upon list
+options = ['Sat', 'Sun']
+days = df_tips['day'].isin(options)
+# print(df_tips[df_tips['day'].isin(['Sat', 'Sun'])])
+
+#######################
+# .apply()
+def last_four(number):
+    return str(number)[:4]
+# print(df['CC Number'].apply(last_four))
+
+# print(df['total_bill'].mean())
+def yelp(price):
+    if price < 10:
+        return '$'
+    elif price >= 10 and price < 30:
+        return '$$'
+    else:
+        return '$$$'
+
+df_tips['yelp'] = df_tips['total_bill'].apply(yelp)
+# print(df_tips.head())
+
+# lambda
+# df_tips['total_bill'] = df_tips['total_bill'].apply(lambda num: num * 2)
+
+def quality(total_bill, tip):
+    if tip/total_bill > 0.25:
+        return "Generous"
+    else:
+        return "Other"
+
+# print(quality(16.99, 1.01))
+# axis = 1 --> for columns, lambda df --> df name of dataframe
+df_tips['Quality'] = df_tips[['total_bill', 'tip']].apply(lambda df_tips: quality(df_tips['total_bill'], df_tips['tip']), axis=1)
+
+# vectorize - faster
+df_tips['Quality'] = np.vectorize(quality)(df_tips['total_bill'], df_tips['tip'])
+# print(df_tips['Quality'])
+
+
+import timeit
+setup = """
+import numpy as np
+import pandas as pd
+df_tips = pd.read_csv('./additional_data/tips.csv')
+
+def quality(total_bill, tip):
+    if tip/total_bill > 0.25:
+        return "Generous"
+    else:
+        return "Other"
+"""
+
+stmt_one = """
+df_tips['Quality'] = df_tips[['total_bill', 'tip']].apply(lambda df_tips: quality(df_tips['total_bill'], df_tips['tip']), axis=1)
+"""
+stmt_two = """df_tips['Quality'] = np.vectorize(quality)(df_tips['total_bill'], df_tips['tip'])
+"""
+# print(timeit.timeit(setup=setup, stmt=stmt_one, number=1000))
+# print(timeit.timeit(setup=setup, stmt=stmt_two, number=1000))
+
+#######################
+# sorting
+df = pd.read_csv("./additional_data/tips.csv")
+# print(df.sort_values('tip', ascending=False))
+
+# by multiple values
+# print(df.sort_values(['tip', 'size']))
+
+# same for min()
+# print(df['total_bill'].max())
+# print(df['total_bill'].idxmax())
+# print(df.iloc[170])
+
+# print(df.corr())
+
+# counts
+# print(df['day'].value_counts())
+# print(df['day'].unique())
+# print(df['day'].nunique())
+
+
+# replacing values
+# df['sex'].replace(to_replace=['Female', 'Male'], value=['F', 'M'], inplace=True)
+# print(df['sex'])
+
+# mymap = {'Female': 'F',
+#          'Male': 'M'}
+# df['sex'] = df['sex'].map(mymap)
+# print(df['sex'])
+
+# print(df.duplicated())
+
+# simple_df = pd.DataFrame([1, 2, 2], ['a', 'b', 'c'])
+# print(simple_df)
+# print(simple_df.duplicated())
+
+# df_filtered = df[df['total_bill'].between(10, 20, inclusive=True)]
+# print(df_filtered)
+
+# amount of largest values
+# print(df.nlargest(2, 'tip'))
+# print(df.sort_values('tip', ascending=False).iloc[:2])
+
+# sampling
+# print(df.sample(5))
+# print(df.sample(frac=0.1))  # samples 10% of dataframe
