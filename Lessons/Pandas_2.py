@@ -202,3 +202,86 @@ sales_2 = pd.read_csv('./additional_data/RetailSales_BeerWineLiquor.csv', parse_
 sales_2 = sales_2.set_index('DATE')
 # print(sales_2.resample(rule='A').mean())
 # print(sales_2['DATE'].dt.year)
+
+
+# CSV FILES
+import os
+# alternative for cdw in Jupiter
+# print(os.getcwd())
+
+# df = pd.read_csv('./additional_data/example.csv', index_col=0)
+# print(df)
+
+# df.to_csv('./additional_data/example_export.csv', index=True)
+# index - True --> when you want to save index (is default)
+
+
+# HTML
+url = "https://en.wikipedia.org/wiki/World_population"
+# tables = pd.read_html(url)
+# print(len(tables))
+
+# world_pop = tables[2]
+# world_pop = world_pop['World population milestones in billions [3](Worldometers estimates)']
+# print(world_pop)
+
+# url = 'https://worldpopulationreview.com/'
+# tables = pd.read_html(url)
+
+# world_population = tables[1]
+# print(world_population.columns)
+
+# EXCEL
+# openpyxl - new excel formats, xlrd - older excel formats
+import openpyxl
+excel_file_path = './additional_data/my_excel_file.xlsx'
+df = pd.read_excel(excel_file_path,  sheet_name='First_Sheet', engine='openpyxl')
+# print(df)
+
+# list sheet names in excel
+wb = pd.ExcelFile(excel_file_path, engine='openpyxl')
+# print(wb.sheet_names)
+
+# read everything - all sheet
+excel_sheet_dic = pd.read_excel(excel_file_path, sheet_name=None, engine='openpyxl')
+# print(excel_sheet_dic)
+# print(excel_sheet_dic['First_Sheet'])
+
+our_df = excel_sheet_dic['First_Sheet']
+# our_df.to_excel('example.xlsx', sheet_name='File', index=False)
+
+# SQL
+from sqlalchemy import create_engine
+# create empty temporary database
+# temp_db = create_engine('sqlite:///:memory:')
+
+simple_df = pd.DataFrame(data=np.random.randint(low=0, high=100, size=(4, 4)), columns=['a', 'b', 'c', 'd'])
+# print(simple_df)
+
+# save db to database
+# simple_df.to_sql(name='new_table', con=temp_db)
+# simple_df.to_sql(name='new_table', con=temp_db)
+
+# reading table
+# new_df = pd.read_sql(sql='new_table', con=temp_db)
+# print(new_df)
+
+# result = pd.read_sql_query(sql='SELECT a, c FROM new_table', con=temp_db)
+# print(result)
+
+# PIVOT TABLES
+df_crm = pd.read_csv('./additional_data/Sales_Funnel_CRM.csv')
+# print(df_crm.head())
+
+licenses = df_crm[['Company', 'Product', 'Licenses']]
+# print(licenses)
+pivot = pd.pivot(data=licenses, index='Company', columns='Product', values='Licenses')
+# print(pivot)
+
+pivot_table = pd.pivot_table(df_crm, index='Company', aggfunc='sum', values=['Licenses', 'Sale Price'])
+# print(pivot_table)
+
+# margins - Totals
+df_contact = pd.pivot_table(df_crm, index=['Account Manager', 'Contact'],columns=['Product'], values=['Sale Price'], aggfunc='sum',
+                            fill_value=0, margins=True)
+print(df_contact)

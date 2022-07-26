@@ -75,7 +75,7 @@ df.drop('tip_percentage', axis=1, inplace=True)
 # Dataframe - Rows
 df = df.set_index('Payment ID')
 
-# reseting index
+# resetting index
 # df = df.reset_index()
 
 # grab row
