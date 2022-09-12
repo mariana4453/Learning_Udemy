@@ -5,7 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/venv/include/python" />
       <excludeFolder url="file://$MODULE_DIR$/venv/include/python_3_intp_my_pc" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.10 (Learning_Udemy)" jdkType="Python SDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
